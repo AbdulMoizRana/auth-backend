@@ -53,7 +53,7 @@ exports.sendOtpEmail = async (req, res) => {
                 otp: otp
             });
         }
-        else{
+        else {
             return res.status(400).json({
                 status: 'Success',
                 message: 'user already exists',
@@ -70,36 +70,165 @@ exports.sendOtpEmail = async (req, res) => {
 exports.verifyUser = async (req, res) => {
     try {
         const { otp } = req.body;
-    let errors = [];
-    if (!otp) {
-        errors.push('otp');
-    }
-    if (errors.length > 0) {
-        errors = errors.join(',');
-        return res.json({
-            message: `These are required fields: ${errors}.`,
-            status: false,
+        let errors = [];
+        if (!otp) {
+            errors.push('otp');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            otp: otp,
         });
-    }
-    const user = await User.findOne({
-        otp: otp,
-    });
-    if (!user) {
+        if (!user) {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'User Not found.',
+            });
+        }
+        else {
+            user.status = "Active";
+            user.otp = null;
+            await user.save();
+
+            return res.status(201).json({
+                status: 'Success',
+                message: 'Your Email is now verified',
+                email: user.email
+            });
+        }
+    } catch (error) {
         return res.status(400).json({
             status: 'Fail',
-            message: 'User Not found.',
+            message: error,
         });
     }
-    else{
-        user.status = "Active";
-        user.otp = null;
-        await user.save();
+};
 
-        return res.status(201).json({
-            status: 'Success',
-            message: 'Your Email is now verified',
+exports.addDetails = async (req, res) => {
+    try {
+        const { userName, password, email } = req.body;
+        if (!userName) {
+            errors.push('userName is requied');
+        }
+        if (!password) {
+            errors.push('password is requied');
+        }
+        if (!email) {
+            errors.push('email is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            email: email,
+        });
+        if (user) {
+            if (user?.status === "Active") {
+                user.userName = userName;
+                user.password = password;
+                await user.save();
+
+                return res.status(201).json({
+                    status: 'Success',
+                    message: 'Your Email is now verified',
+                    email: user.email,
+                    userName: user.userName,
+                    password: user.password
+                });
+            }
+            else {
+                return res.status(400).json({
+                    status: 'Fail',
+                    message: 'Please verify your email first',
+                });
+            }
+
+        }
+        else {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'User not found',
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
         });
     }
+};
+
+exports.login = async (req, res) => {
+    try {
+        const { userName, password } = req.body;
+        if (!userName) {
+            errors.push('userName or email is requied');
+        }
+        if (!password) {
+            errors.push('password is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        let user = await User.findOne({
+            email: userName,
+        });
+        if (user) {
+            if (user?.password == password) {
+                return res.status(201).json({
+                    status: 'Success',
+                    message: 'login success',
+                    email: user.email,
+                });
+            }
+            else {
+                return res.status(400).json({
+                    status: 'Fail',
+                    message: 'Please enter correct password',
+                });
+            }
+
+        }
+        else {
+            user = await User.findOne({
+                userName: userName,
+            });
+            if (user) {
+                if (user?.password == password) {
+                    return res.status(201).json({
+                        status: 'Success',
+                        message: 'login success',
+                        email: user.email,
+                    });
+                }
+                else {
+                    return res.status(400).json({
+                        status: 'Fail',
+                        message: 'Please enter correct password',
+                    });
+                }
+
+            }
+            else {
+                return res.status(400).json({
+                    status: 'Fail',
+                    message: 'User not found',
+                });
+            }
+        }
     } catch (error) {
         return res.status(400).json({
             status: 'Fail',
