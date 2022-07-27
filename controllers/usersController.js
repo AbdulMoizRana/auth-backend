@@ -112,6 +112,7 @@ exports.verifyUser = async (req, res) => {
 exports.addDetails = async (req, res) => {
     try {
         const { userName, password, email } = req.body;
+        let errors = [];
         if (!userName) {
             errors.push('userName is requied');
         }
@@ -170,6 +171,7 @@ exports.addDetails = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { userName, password } = req.body;
+        let errors = [];
         if (!userName) {
             errors.push('userName or email is requied');
         }
