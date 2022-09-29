@@ -36,7 +36,7 @@ exports.sendOtpEmail = async (req, res) => {
                 from: 'nodemailer', // sender address
                 to: email, // list of receivers
                 subject: "Please confirm your account",
-                text: `your otp is${otp}`, // plain text body
+                text: `your otp is ${otp}`, // plain text body
                 //   html: `<h1>Email Confirmation</h1><h2>Hello ${email}</h2><p>Thank you for subscribing. Please confirm your email by clicking on the following link</p><a href=${WEBSITE_LINK}/${otp}> Click here</a></div>`
             });
 
@@ -140,10 +140,8 @@ exports.addDetails = async (req, res) => {
 
                 return res.status(201).json({
                     status: 'Success',
-                    message: 'Your Email is now verified',
+                    message: 'Your details added',
                     email: user.email,
-                    userName: user.userName,
-                    password: user.password
                 });
             }
             else {
