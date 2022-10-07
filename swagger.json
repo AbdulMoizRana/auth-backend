@@ -211,7 +211,7 @@
                 "tags": [
                     "Posts"
                 ],
-                "description": "edit post",
+                "description": "del post",
                 "parameters": [
                     {
                         "name": "postId",
@@ -227,7 +227,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Changes are saved",
+                        "description": "Post is deleted",
                         "schema": {
                             "$ref": "#/definitions/Posts"
                         }
@@ -256,7 +256,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Changes are saved",
+                        "description": "get post by its id",
                         "schema": {
                             "$ref": "#/definitions/Posts"
                         }
@@ -269,13 +269,13 @@
                 "tags": [
                     "Posts"
                 ],
-                "description": "edit post",
+                "description": "all posts",
                 "produces": [
                     "application/json"
                 ],
                 "responses": {
                     "200": {
-                        "description": "Changes are saved",
+                        "description": "all posts",
                         "schema": {
                             "$ref": "#/definitions/Posts"
                         }
@@ -288,7 +288,7 @@
                 "tags": [
                     "Posts"
                 ],
-                "description": "edit post",
+                "description": "post",
                 "parameters": [
                     {
                         "name": "postType",
@@ -304,7 +304,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Changes are saved",
+                        "description": "posts",
                         "schema": {
                             "$ref": "#/definitions/Posts"
                         }
@@ -317,7 +317,7 @@
                 "tags": [
                     "Posts"
                 ],
-                "description": "edit post",
+                "description": "post of user",
                 "parameters": [
                     {
                         "name": "userId",
@@ -333,7 +333,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Changes are saved",
+                        "description": "post of user",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/getPostByAudience": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "post of audience type",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "audience type",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "post of audience type",
                         "schema": {
                             "$ref": "#/definitions/Posts"
                         }
