@@ -85,7 +85,7 @@
                 }
             }
         },
-         "/user/sendotp": {
+        "/user/sendotp": {
             "post": {
                 "tags": [
                     "Users"
@@ -142,14 +142,212 @@
                     }
                 }
             }
+        },
+        "/post/createPost": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "create new post",
+                "parameters": [
+                    {
+                        "name": "Posts",
+                        "in": "body",
+                        "description": "create new post",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Your post is created",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/editPost": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "query",
+                        "description": "edit post"
+                    },
+                    {
+                        "name": "Posts",
+                        "in": "body",
+                        "description": "edit post",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/delPost": {
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "query",
+                        "description": "post id",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/getPost": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "parameters": [
+                    {
+                        "name": "postId",
+                        "in": "query",
+                        "description": "post id",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/getAllPost": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/getPostByType": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "parameters": [
+                    {
+                        "name": "postType",
+                        "in": "query",
+                        "description": "post id",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
+        },
+        "/post/getPostOfUser": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "edit post",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "post id",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "User": {
             "required": [
-               "userName",
-               "email",
-               "password"
+                "userName",
+                "email",
+                "password"
             ],
             "properties": {
                 "userName": {
@@ -194,6 +392,40 @@
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "Posts": {
+            "properties": {
+                "postTitle": {
+                    "type": "string"
+                },
+                "postDescription": {
+                    "type": "string"
+                },
+                "postPhotos": {
+                    "type": "array"
+                },
+                "postType": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array"
+                },
+                "nsfw": {
+                    "type": "boolean"
+                },
+                "postAudienceType": {
+                    "type": "string"
+                },
+                "postUser": {
+                    "type": "string"
+                },
+                "tagUsers": {
+                    "type": "array"
+                },
+                "postAudience": {
+                    "type": "array"
                 }
             }
         }
