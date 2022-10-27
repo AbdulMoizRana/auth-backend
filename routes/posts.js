@@ -7,7 +7,12 @@ const {
   getAllPosts,
   getPostByType,
   getPostOfUser,
-  getPostByAudience
+  getPostByAudience,
+  likePost,
+  unlikePost,
+  addComment,
+  removeComment,
+  reShare
 } = require('../controllers/postController');
 
 const router = express.Router({ mergeParams: true });
@@ -20,5 +25,9 @@ router.route('/getAllPost').get(getAllPosts);
 router.route('/getPostByType').get(getPostByType);
 router.route('/getPostOfUser').get(getPostOfUser);
 router.route('/getPostByAudience').get(getPostByAudience);
-
+router.route('/likePost').post(likePost);
+router.route('/unlikePost').post(unlikePost);
+router.route('/addComment').post(addComment);
+router.route('/removeComment').post(removeComment);
+router.route('/reShare').post(reShare);
 module.exports = router;

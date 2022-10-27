@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const nodemailer = require("nodemailer");
+const Setting = require('../models/Setting');
 
 exports.sendOtpEmail = async (req, res) => {
     try {
@@ -166,6 +167,129 @@ exports.addDetails = async (req, res) => {
     }
 };
 
+exports.signUp = async (req, res) => {
+    try {
+        const { fullName, password, email } = req.body;
+        let errors = [];
+        if (!fullName) {
+            errors.push('fullName is requied');
+        }
+        if (!password) {
+            errors.push('password is requied');
+        }
+        if (!email) {
+            errors.push('email is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            email: email,
+        });
+        if (user) {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'Email already exist',
+            });
+            // if (user?.status === "Active") {
+            //     user.fullName = fullName;
+            //     user.password = password;
+            //     await user.save();
+
+            //     return res.status(201).json({
+            //         status: 'Success',
+            //         message: 'Your details added',
+            //         email: user.email,
+            //     });
+            // }
+            // else {
+            //     return res.status(400).json({
+            //         status: 'Fail',
+            //         message: 'Please verify your email first',
+            //     });
+            // }
+        }
+        else {
+            await user.save();
+            const settingParam = {
+                userId: user._id
+            }
+            await Setting.insertOne(settingParam);
+                 return res.status(201).json({
+                    status: 'Success',
+                    message: 'Your details added',
+                    email: user.email,
+                });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.profileSetup = async (req, res) => {
+    try {
+        const { userName, gender, planet, country, postalCode, email} = req.body;
+        let errors = [];
+        if (!userName) {
+            errors.push('userName is requied');
+        }
+        if (!gender) {
+            errors.push('gender is requied');
+        }
+        if (!planet) {
+            errors.push('planet is requied');
+        }
+        if (!country) {
+            errors.push('country is requied');
+        }
+        if (!postalCode) {
+            errors.push('postalCode is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            email: email,
+        });
+        if (user) {
+            const newUser = await User.findByIdAndUpdate({email:email}, req.body,
+                function (err, docs) {
+                    if (err) {
+                        console.log(err)
+                    }
+                    else {
+                        return res.status(200).json({
+                            status: 'Changes are saved',
+                        });
+                    }
+                });
+        }
+        else {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'user not found',
+            });
+                 
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
 exports.login = async (req, res) => {
     try {
         const { userName, password } = req.body;
@@ -229,6 +353,342 @@ exports.login = async (req, res) => {
                 });
             }
         }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.savePost = async (req, res) => {
+    try {
+        const { userId, postId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            _id: userId
+        });
+        const savedPosts = post?.savedPosts
+        savedPosts.push(postId);
+        const newUser = User.findByIdAndUpdate(userId, {savedPosts:savedPosts},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'Post have re shared',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.getUser = async (req, res) => {
+    try {
+        const { userId } = req.query;
+        const user = User.find({_id:userId},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'User data',
+                        data : docs
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.addFriendsRequest = async (req, res) => {
+    try {
+        const { userId, friendId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!friendId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            _id: userId
+        });
+        const friendRequests = user?.friendRequests
+        friendRequests.push(friendId);
+        const newuser = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'Friend request sent',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+exports.removeFriendRequest = async (req, res) => {
+    try {
+        const { userId, friendId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!friendId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            _id: userId
+        });
+        let friendRequests = user?.friendRequests;
+        friendRequests = friendRequests.filter(item => item !== friendId);
+        const newPost = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+            function (err, docs) {
+                if (err) {
+                    return res.status(400).json({
+                        status: 'Fail',
+                        message: err,
+                    });
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'You remove the friend request',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.acceptFriendsRequest = async (req, res) => {
+    try {
+        const { userId, friendId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!friendId) {
+            errors.push('friendId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            _id: userId
+        });
+        let friendRequests = user?.friendRequests;
+        friendRequests = friendRequests.filter(item => item !== friendId);
+        const newuser = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+            function (err, docs) {
+                if (err) {
+                    console.log("a",docs)
+                    return res.status(400).json({
+                        status: 'Fail',
+                        message: err,
+                    });
+                }
+                else {
+                    let friends = user?.friends;
+                    friends.push(friendId);
+                    const newuser2 = User.findByIdAndUpdate(userId, {friends:friends},
+                        function (err, docs) {
+                            if (err) {
+                                console.log("b",docs)
+                                return res.status(400).json({
+                                    status: 'Fail',
+                                    message: err,
+                                });
+                            }
+                            else {
+                                return res.status(200).json({
+                                    status: 'You are friends',
+                                });
+                            }
+                        });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        console.log("c",error)
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.unFriends = async (req, res) => {
+    try {
+        const { userId, friendId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!friendId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            _id: userId
+        });
+        let friends = user?.friends;
+        friends = friends.filter(item => item !== friendId);
+        const newPost = User.findByIdAndUpdate(userId, {friends:friends},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'You unfriend the user',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.getFriendRequests = async (req, res) => {
+    try {
+        const { userId } = req.query;
+        const user = User.find({_id:userId},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'User data',
+                        data : docs
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.getFriends = async (req, res) => {
+    try {
+        const { userId } = req.query;
+        const user = User.find({_id:userId},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    console.log("sd",docs)
+                    return res.status(200).json({
+                        status: 'User data',
+                        data : docs
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
     } catch (error) {
         return res.status(400).json({
             status: 'Fail',

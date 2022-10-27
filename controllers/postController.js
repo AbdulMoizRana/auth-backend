@@ -238,3 +238,236 @@ exports.getPostByAudience = async (req, res) => {
         });
     }
 };
+
+exports.likePost = async (req, res) => {
+    try {
+        const { userId, postId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const post = await Post.findOne({
+            _id: postId
+        });
+        const likes = post?.likes
+        likes.push(userId);
+        const newPost = Post.findByIdAndUpdate(postId, {likes:likes},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'Changes are saved',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.unlikePost = async (req, res) => {
+    try {
+        const { userId, postId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const post = await Post.findOne({
+            _id: postId
+        });
+        let likes = post?.likes;
+        likes = likes.filter(item => item !== userId)
+        const newPost = Post.findByIdAndUpdate(postId, {likes:likes},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'You have disliked a post',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.addComment = async (req, res) => {
+    try {
+        const { userId, postId, comment} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (!comment) {
+            errors.push('comment of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const post = await Post.findOne({
+            _id: postId
+        });
+        const comments = post?.comments
+        comments.push(req.body);
+        const newPost = Post.findByIdAndUpdate(postId, {comments:comments},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'your comment have added',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.removeComment = async (req, res) => {
+    try {
+        const { commentId, postId} = req.body
+        let errors = [];
+        if (!commentId) {
+            errors.push('commentId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const post = await Post.findOne({
+            _id: postId
+        });
+        let comments = post?.comments;
+        comments = comments.filter(item => item?._id != commentId);
+        const newPost = Post.findByIdAndUpdate(postId, {comments:comments},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'Your comment have removed',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.reShare = async (req, res) => {
+    try {
+        const { userId, postId} = req.body
+        let errors = [];
+        if (!userId) {
+            errors.push('userId is requied');
+        }
+        if (!postId) {
+            errors.push('postId of post is requied');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const post = await Post.findOne({
+            _id: postId
+        });
+        const reShare = post?.reShare
+        reShare.push(userId);
+        const newPost = Post.findByIdAndUpdate(postId, {reShare:reShare},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    return res.status(200).json({
+                        status: 'Post have re shared',
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+       
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};

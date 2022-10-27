@@ -37,7 +37,28 @@ const postSchema = new mongoose.Schema(
     postAudience: { 
       type: Array,
     },
-
+    likes: {
+      type: Array
+    },
+    comments: [
+      {
+        userId: {
+          type: String,
+          required : true,
+      },
+      postId: {
+          type: String,
+          required : true, // required informs for missing fields
+      },
+      comment: {
+        type: String,
+        required : true, // required informs for missing fields
+    }
+      }
+    ],
+    reShare: {
+      type: Array
+    },
   },
   { timestamps: true }
 );

@@ -56,6 +56,97 @@
                 }
             }
         },
+        "/user/signUp": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Create new user in system",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "description": "email",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "fullName": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New user is created",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profileSetup": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Create new user in system",
+                "parameters": [
+                    {
+                        "name": "enter details",
+                        "in": "body",
+                        "description": "email",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                },
+                                "profileImage": {
+                                    "type": "string"
+                                },
+                                "gender": {
+                                    "type": "string"
+                                },
+                                "planet": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Earth",
+                                        "Mars"
+                                    ],
+                                    "default": "Earth"
+                                },
+                                "country": {
+                                    "type": "string"
+                                },
+                                "postalCode": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved"
+                    }
+                }
+            }
+        },
         "/user/login": {
             "post": {
                 "tags": [
@@ -369,6 +460,470 @@
                     }
                 }
             }
+        },
+        "/post/likePost": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "Like a Post",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "you have liked a post"
+                    }
+                }
+            }
+        },
+        "/post/unlikePost": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "un-Like a Post",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "you have disliked a post"
+                    }
+                }
+            }
+        },
+        "/post/addComment": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "add a comment to Post",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string"
+                                },
+                                "comment": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "your comment have added"
+                    }
+                }
+            }
+        },
+        "/post/removeComment": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "remove comment from Post",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "postId": {
+                                    "type": "string"
+                                },
+                                "commentId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Your comment have removed"
+                    }
+                }
+            }
+        },
+        "/post/reShare": {
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "description": "reshare post",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "postId": {
+                                    "type": "string"
+                                },
+                                "userId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have re shared"
+                    }
+                }
+            }
+        },
+        "/user/savePost": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "post saved",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "postId": {
+                                    "type": "string"
+                                },
+                                "userId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have saved"
+                    }
+                }
+            }
+        },
+        "/user/getUser": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "get user",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user id",
+                        "schema": {
+                            "$ref": "#/definitions/Posts"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data of user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/getFriends": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "get user",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user id",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data of user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/getFriendRequest": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "get user",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "user id",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data of user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/acceptFriendsRequest": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "post saved",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "friendId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have saved"
+                    }
+                }
+            }
+        },
+        "/user/unFriends": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "post saved",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "friendId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have saved"
+                    }
+                }
+            }
+        },
+        "/user/removeFriendRequest": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "post saved",
+                "parameters": [
+                    {
+                        "name": "postid userid",
+                        "in": "body",
+                        "description": "enter postid and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "friendId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have saved"
+                    }
+                }
+            }
+        },
+        "/user/addFriendsRequest": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "request sent",
+                "parameters": [
+                    {
+                        "name": "friendId userid",
+                        "in": "body",
+                        "description": "enter friendId and userid",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "friendId": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post have saved"
+                    }
+                }
+            }
+        },
+        "/post/editSetting": {
+            "post": {
+                "tags": [
+                    "Settings"
+                ],
+                "description": "edit settings",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "enter user id"
+                    },
+                    {
+                        "name": "Settings",
+                        "in": "body",
+                        "description": "sent only those settings which you want to modifiy",
+                        "schema": {
+                            "$ref": "#/definitions/Settings"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Changes are saved",
+                        "schema": {
+                            "$ref": "#/definitions/Settings"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -456,6 +1011,67 @@
                 "postAudience": {
                     "type": "array"
                 }
+            }
+        },
+        "Settings": {
+            "userId": {
+                "type": "string"
+            },
+            "themeColor": {
+                "type": "string"
+            },
+            "displayAnthem": {
+                "type": "boolean",
+                "default": false
+            },
+            "displayTop10": {
+                "type": "boolean",
+                "default": false
+            },
+            "displayWallComments": {
+                "type": "boolean",
+                "default": false
+            },
+            "showOnline": {
+                "type": "boolean",
+                "default": false
+            },
+            "privateProfile": {
+                "type": "boolean",
+                "default": false
+            },
+            "hideProfileSearch": {
+                "type": "boolean",
+                "default": false
+            },
+            "hideAge": {
+                "type": "boolean",
+                "default": false
+            },
+            "messageAudience": {
+                "type": "string",
+                "enum": [
+                    "Everyone",
+                    "Friends",
+                    "No"
+                ],
+                "default": "Everyone"
+            },
+            "messageRestrication": {
+                "type": "boolean",
+                "default": false
+            },
+            "bulletinComment": {
+                "type": "boolean",
+                "default": false
+            },
+            "photoComment": {
+                "type": "boolean",
+                "default": false
+            },
+            "wallComment": {
+                "type": "boolean",
+                "default": false
             }
         }
     }
