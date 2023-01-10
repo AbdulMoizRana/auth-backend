@@ -1052,7 +1052,7 @@
                 "type": "string",
                 "enum": [
                     "Everyone",
-                    "Friends",
+                    "Friend",
                     "No"
                 ],
                 "default": "Everyone"
