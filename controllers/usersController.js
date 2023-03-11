@@ -214,15 +214,15 @@ exports.signUp = async (req, res) => {
             // }
         }
         else {
-            await user.save();
+            const newUser = await User.insertMany([{ fullName:fullName, password:password, email:email }]);
             const settingParam = {
-                userId: user._id
+                userId: newUser._id
             }
-            await Setting.insertOne(settingParam);
+            await Setting.insertMany([settingParam]);
                  return res.status(201).json({
                     status: 'Success',
                     message: 'Your details added',
-                    email: user.email,
+                    email: newUser.email,
                 });
         }
     } catch (error) {
