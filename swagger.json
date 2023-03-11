@@ -9,7 +9,7 @@
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "localhost:8000",
+    "host": "auth-backend-production-5fd3.up.railway.app",
     "basePath": "/api/v1",
     "tags": [
         {
@@ -18,7 +18,7 @@
         }
     ],
     "schemes": [
-        "http"
+        "https"
     ],
     "consumes": [
         "application/json"
