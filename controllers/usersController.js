@@ -215,10 +215,11 @@ exports.signUp = async (req, res) => {
         }
         else {
             const newUser = await User.insertMany([{ fullName:fullName, password:password, email:email }]);
+            console.log("hjko",newUser, newUser[0]._id)
             const settingParam = {
-                userId: newUser._id
+                userId: newUser[0]._id
             }
-            await Setting.insertMany([settingParam]);
+            const set = await Setting.insertMany([settingParam]);
                  return res.status(201).json({
                     status: 'Success',
                     message: 'Your details added',
@@ -237,9 +238,9 @@ exports.profileSetup = async (req, res) => {
     try {
         const { userName, gender, planet, country, postalCode, email} = req.body;
         let errors = [];
-        // if (!userName) {
-        //     errors.push('userName is requied');
-        // }
+        if (!userName) {
+            errors.push('userName is requied');
+        }
         if (!gender) {
             errors.push('gender is requied');
         }
