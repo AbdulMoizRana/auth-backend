@@ -236,7 +236,7 @@ exports.signUp = async (req, res) => {
 
 exports.profileSetup = async (req, res) => {
     try {
-        const { userName, gender, planet, country, postalCode, email} = req.body;
+        const { userName, gender, planet, country, postalCode, email, fullName} = req.body;
         let errors = [];
         if (!userName) {
             errors.push('userName is requied');
@@ -264,10 +264,12 @@ exports.profileSetup = async (req, res) => {
             email: email,
         });
         if (user) {
-            const newUser = await User.findByIdAndUpdate({email:email}, req.body,
+            const newUser = await User.findByIdAndUpdate(user._id, req.body,
                 function (err, docs) {
                     if (err) {
-                        console.log(err)
+                        return res.status(200).json({
+                            err: err
+                        });
                     }
                     else {
                         return res.status(200).json({
