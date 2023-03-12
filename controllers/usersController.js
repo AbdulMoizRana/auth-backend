@@ -237,9 +237,9 @@ exports.profileSetup = async (req, res) => {
     try {
         const { userName, gender, planet, country, postalCode, email} = req.body;
         let errors = [];
-        if (!userName) {
-            errors.push('userName is requied');
-        }
+        // if (!userName) {
+        //     errors.push('userName is requied');
+        // }
         if (!gender) {
             errors.push('gender is requied');
         }
