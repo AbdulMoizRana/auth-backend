@@ -51,6 +51,9 @@ const userSchema = new mongoose.Schema(
     friends: {
       type: Array
     },
+    forgetPasswordCode: {
+      type: String
+    },
   },
   { timestamps: true }
 );

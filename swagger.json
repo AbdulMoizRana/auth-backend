@@ -237,6 +237,62 @@
                 }
             }
         },
+        "/user/forgetPassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "send code to your account",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "description": "send code to email",
+                        "schema": {
+                            "$ref": "#/definitions/UserOtp"
+                        }
+                    
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email with code sent to your registerd account successfully"
+                    }
+                }
+            }
+        },
+        "/user/changePassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "change password",
+                "parameters": [
+                    {
+                        "name": "VerifyOtp",
+                        "in": "body",
+                        "description": "change password",
+                        "schema": {
+                            "$ref": "#/definitions/changePassword"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Your password is updated",
+                        "schema": {
+                            "$ref": "#/definitions/UserLogin"
+                        }
+                    }
+                }
+            }
+        },
         "/post/createPost": {
             "post": {
                 "tags": [
@@ -979,6 +1035,20 @@
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "changePassword": {
+            "required": [
+                "code",
+                "newPassword"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string" 
                 }
             }
         },

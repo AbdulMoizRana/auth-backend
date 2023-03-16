@@ -2,6 +2,122 @@ const User = require('../models/User');
 const nodemailer = require("nodemailer");
 const Setting = require('../models/Setting');
 
+
+exports.forgetPassword = async (req, res) => {
+    try {
+        console.log("here forgery")
+        const { email } = req.body;
+        let errors = [];
+        let duplicate = false;
+        if (!email) {
+            errors.push('email');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const userfind = await User.findOne({
+            email: email,
+        })
+        if (userfind) {
+            const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let otp = '';
+            for (let i = 0; i < 5; i++) {
+                otp += characters[Math.floor(Math.random() * characters.length)];
+            }
+            const transport = await nodemailer.createTransport({
+                service: 'Gmail',
+                auth: {
+                    user: 'confirmationformail@gmail.com',
+                    pass: 'khedrdaffewfsdxc'
+                }
+            });
+            let info = await transport.sendMail({
+                from: 'nodemailer', // sender address
+                to: email, // list of receivers
+                subject: "Please confirm your account",
+                text: `your code to change password is ${otp}`, // plain text body
+                //   html: `<h1>Forget Password</h1><h2>Hello ${email}</h2><p>To change your password click here</p><a href=${WEBSITE_LINK}/${otp}> Click here</a></div>`
+            });
+
+            // let user = new User({
+            //     email,
+            //     otp
+            // });
+            let user = await User.findByIdAndUpdate(userfind._id,{
+                forgetPasswordCode:otp
+            })
+
+            // await user.save();
+
+            return res.status(201).json({
+                status: 'Success',
+                message: 'Email with code sent to your registerd account successfully',
+                code: otp
+            });
+        }
+        else {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'user not exists',
+            });
+        }
+    } catch (err) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: err,
+        });
+    }
+};
+
+exports.changePassword = async (req, res) => {
+    try {
+        const { code, newPassword } = req.body;
+        let errors = [];
+        if (!code) {
+            errors.push('code');
+        }
+        if (!newPassword) {
+            errors.push('newPassword');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findOne({
+            forgetPasswordCode: code,
+        });
+        if (!user) {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'User Not found.',
+            });
+        }
+        else {
+            user.password = newPassword
+            user.forgetPasswordCode = null;
+            await user.save();
+
+            return res.status(201).json({
+                status: 'Success',
+                message: 'Your password updated',
+                email: user.email
+            });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
 exports.sendOtpEmail = async (req, res) => {
     try {
         const { email } = req.body;
