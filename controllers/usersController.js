@@ -431,16 +431,17 @@ exports.login = async (req, res) => {
         });
         if (user) {
             if (user?.password == password) {
+                user.password = undefined;
                 return res.status(201).json({
                     status: 'Success',
                     message: 'login success',
-                    email: user.email,
+                    user: user,
                 });
             }
             else {
                 return res.status(400).json({
                     status: 'Fail',
-                    message: 'Please enter correct password',
+                    message: 'Please enter correct password, email or username',
                 });
             }
 

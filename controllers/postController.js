@@ -1,9 +1,24 @@
 const Post = require('../models/Post');
+const User = require('../models/User');
 const nodemailer = require("nodemailer");
+
+// Requiring ObjectId from mongoose npm package
+const ObjectId = require('mongoose').Types.ObjectId;
+
+// Validator function
+function isValidObjectId(id) {
+
+    if (ObjectId.isValid(id)) {
+        if ((String)(new ObjectId(id)) === id)
+            return true;
+        return false;
+    }
+    return false;
+}
 
 exports.createPost = async (req, res) => {
     try {
-        const { postDescription, postUser } = req.body;
+        const { postDescription, postUser, postTitle, postType, nsfw, postAudienceType } = req.body;
         let errors = [];
         if (!postDescription) {
             errors.push('postDescription is requied');
@@ -11,6 +26,19 @@ exports.createPost = async (req, res) => {
         if (!postUser) {
             errors.push('user of post is requied');
         }
+        if (!postTitle) {
+            errors.push('post title is requied');
+        }
+        if (!postType) {
+            errors.push('post type is requied');
+        }
+        if (!nsfw) {
+            errors.push('nsfw is requied');
+        }
+        if (!postAudienceType) {
+            errors.push('post audienceType is requied');
+        }
+
         if (errors.length > 0) {
             errors = errors.join(',');
             return res.json({
@@ -19,12 +47,21 @@ exports.createPost = async (req, res) => {
             });
         }
 
-        let post = await new Post(req.body);
+        const user = await User.findById(postUser);
+        if (user) {
+            let post = await new Post(req.body);
 
-        await post.save();
-        return res.status(200).json({
-            status: 'Your post is created',
-        });
+            await post.save();
+            return res.status(200).json({
+                status: 'Your post is created',
+            });
+        } else {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'User with given id not found',
+            });
+        }
+
 
     } catch (error) {
         return res.status(400).json({
@@ -65,7 +102,7 @@ exports.editPost = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -92,7 +129,7 @@ exports.delPost = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -105,26 +142,37 @@ exports.delPost = async (req, res) => {
 exports.getPost = async (req, res) => {
     try {
         const { postId } = req.query;
-        const post = Post.find(postId,
-            function (err, docs) {
-                if (err) {
-                    console.log(err)
-                }
-                else {
-                    return res.status(200).json({
-                        status: 'Post data',
-                        data : docs
-                    });
+        const post = await Post.findById(postId);
+        const user = await User.findById(post?.postUser);
+        if (user) {
+            // const { password, ...userRest } = user;
+            user.password = undefined;
+            return res.status(200).json({
+                status: true,
+                message: 'Post data',
+                data: {
+                    postData: post,
+                    userData: user
                 }
             });
+        }
+        else {
+            return res.status(200).json({
+                status: true,
+                message: 'User Of Post is not found',
+                data: docs
+            });
+        }
+
+
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
-            status: 'Fail',
+            status: false,
             message: error,
         });
     }
@@ -133,22 +181,39 @@ exports.getPost = async (req, res) => {
 exports.getAllPosts = async (req, res) => {
     try {
         const { postId } = req.query;
-        const post = Post.find({},
-            function (err, docs) {
-                if (err) {
-                    console.log(err)
+        const post = await Post.find({});
+        let user;
+        const postWithUser = [];
+        if (post) {
+            for (let index = 0; index < post.length; index++) {
+                const element = post[index];
+                const idCheck = await isValidObjectId(element?.postUser)
+                if (idCheck) {
+                    user = await User.findById(element?.postUser);
+                    user.password = undefined;
+                    postWithUser.push({
+                        postData: element,
+                        userData: user
+                    })
                 }
                 else {
-                    return res.status(200).json({
-                        status: 'Post data',
-                        data : docs
-                    });
+                    postWithUser.push({
+                        postData: element,
+                        userData: {}
+                    })
                 }
+            }
+        }
+            return res.status(200).json({
+                status: true,
+                message: 'Post data',
+                data: postWithUser
             });
+        
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -160,7 +225,7 @@ exports.getAllPosts = async (req, res) => {
 exports.getPostByType = async (req, res) => {
     try {
         const { postId } = req.query;
-        const post = Post.find({postId:postId},
+        const post = Post.find({ postId: postId },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -168,14 +233,14 @@ exports.getPostByType = async (req, res) => {
                 else {
                     return res.status(200).json({
                         status: 'Post data',
-                        data : docs
+                        data: docs
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -187,7 +252,7 @@ exports.getPostByType = async (req, res) => {
 exports.getPostOfUser = async (req, res) => {
     try {
         const { userId } = req.query;
-        const post = Post.find({postUser:userId},
+        const post = Post.find({ postUser: userId },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -195,14 +260,14 @@ exports.getPostOfUser = async (req, res) => {
                 else {
                     return res.status(200).json({
                         status: 'Post data',
-                        data : docs
+                        data: docs
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -214,7 +279,7 @@ exports.getPostOfUser = async (req, res) => {
 exports.getPostByAudience = async (req, res) => {
     try {
         const { type } = req.query;
-        const post = Post.find({postAudienceType:type},
+        const post = Post.find({ postAudienceType: type },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -222,14 +287,14 @@ exports.getPostByAudience = async (req, res) => {
                 else {
                     return res.status(200).json({
                         status: 'Post data',
-                        data : docs
+                        data: docs
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -241,7 +306,7 @@ exports.getPostByAudience = async (req, res) => {
 
 exports.likePost = async (req, res) => {
     try {
-        const { userId, postId} = req.body
+        const { userId, postId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -261,7 +326,7 @@ exports.likePost = async (req, res) => {
         });
         const likes = post?.likes
         likes.push(userId);
-        const newPost = Post.findByIdAndUpdate(postId, {likes:likes},
+        const newPost = Post.findByIdAndUpdate(postId, { likes: likes },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -275,7 +340,7 @@ exports.likePost = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -287,7 +352,7 @@ exports.likePost = async (req, res) => {
 
 exports.unlikePost = async (req, res) => {
     try {
-        const { userId, postId} = req.body
+        const { userId, postId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -307,7 +372,7 @@ exports.unlikePost = async (req, res) => {
         });
         let likes = post?.likes;
         likes = likes.filter(item => item !== userId)
-        const newPost = Post.findByIdAndUpdate(postId, {likes:likes},
+        const newPost = Post.findByIdAndUpdate(postId, { likes: likes },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -321,7 +386,7 @@ exports.unlikePost = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -333,7 +398,7 @@ exports.unlikePost = async (req, res) => {
 
 exports.addComment = async (req, res) => {
     try {
-        const { userId, postId, comment} = req.body
+        const { userId, postId, comment } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -356,7 +421,7 @@ exports.addComment = async (req, res) => {
         });
         const comments = post?.comments
         comments.push(req.body);
-        const newPost = Post.findByIdAndUpdate(postId, {comments:comments},
+        const newPost = Post.findByIdAndUpdate(postId, { comments: comments },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -370,7 +435,7 @@ exports.addComment = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -382,7 +447,7 @@ exports.addComment = async (req, res) => {
 
 exports.removeComment = async (req, res) => {
     try {
-        const { commentId, postId} = req.body
+        const { commentId, postId } = req.body
         let errors = [];
         if (!commentId) {
             errors.push('commentId is requied');
@@ -402,7 +467,7 @@ exports.removeComment = async (req, res) => {
         });
         let comments = post?.comments;
         comments = comments.filter(item => item?._id != commentId);
-        const newPost = Post.findByIdAndUpdate(postId, {comments:comments},
+        const newPost = Post.findByIdAndUpdate(postId, { comments: comments },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -416,7 +481,7 @@ exports.removeComment = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -428,7 +493,7 @@ exports.removeComment = async (req, res) => {
 
 exports.reShare = async (req, res) => {
     try {
-        const { userId, postId} = req.body
+        const { userId, postId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -448,7 +513,7 @@ exports.reShare = async (req, res) => {
         });
         const reShare = post?.reShare
         reShare.push(userId);
-        const newPost = Post.findByIdAndUpdate(postId, {reShare:reShare},
+        const newPost = Post.findByIdAndUpdate(postId, { reShare: reShare },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -462,7 +527,7 @@ exports.reShare = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
