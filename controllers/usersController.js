@@ -47,8 +47,8 @@ exports.forgetPassword = async (req, res) => {
             //     email,
             //     otp
             // });
-            let user = await User.findByIdAndUpdate(userfind._id,{
-                forgetPasswordCode:otp
+            let user = await User.findByIdAndUpdate(userfind._id, {
+                forgetPasswordCode: otp
             })
 
             // await user.save();
@@ -109,6 +109,58 @@ exports.changePassword = async (req, res) => {
                 message: 'Your password updated',
                 email: user.email
             });
+        }
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { id, newPassword, oldPassword } = req.body;
+        let errors = [];
+        if (!id) {
+            errors.push('id');
+        }
+        if (!newPassword) {
+            errors.push('newPassword');
+        }
+        if (!oldPassword) {
+            errors.push('oldPassword');
+        }
+        if (errors.length > 0) {
+            errors = errors.join(',');
+            return res.json({
+                message: `These are required fields: ${errors}.`,
+                status: false,
+            });
+        }
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({
+                status: 'Fail',
+                message: 'User Not found.',
+            });
+        }
+        else {
+            if (user.password == oldPassword) {
+                user.password = newPassword
+                await user.save();
+                return res.status(201).json({
+                    status: 'Success',
+                    message: 'Your password updated',
+                    email: user.email
+                });
+            }
+            else {
+                return res.status(400).json({
+                    status: 'Fail',
+                    message: 'Password is incorrect',
+                });
+            }
         }
     } catch (error) {
         return res.status(400).json({
@@ -330,17 +382,17 @@ exports.signUp = async (req, res) => {
             // }
         }
         else {
-            const newUser = await User.insertMany([{ fullName:fullName, password:password, email:email }]);
-            console.log("hjko",newUser, newUser[0]._id)
+            const newUser = await User.insertMany([{ fullName: fullName, password: password, email: email }]);
+            console.log("hjko", newUser, newUser[0]._id)
             const settingParam = {
                 userId: newUser[0]._id
             }
             const set = await Setting.insertMany([settingParam]);
-                 return res.status(201).json({
-                    status: 'Success',
-                    message: 'Your details added',
-                    email: newUser.email,
-                });
+            return res.status(201).json({
+                status: 'Success',
+                message: 'Your details added',
+                email: newUser.email,
+            });
         }
     } catch (error) {
         return res.status(400).json({
@@ -352,7 +404,7 @@ exports.signUp = async (req, res) => {
 
 exports.profileSetup = async (req, res) => {
     try {
-        const { userName, gender, planet, country, postalCode, email, fullName} = req.body;
+        const { userName, gender, planet, country, postalCode, email, fullName } = req.body;
         let errors = [];
         if (!userName) {
             errors.push('userName is requied');
@@ -399,7 +451,7 @@ exports.profileSetup = async (req, res) => {
                 status: 'Fail',
                 message: 'user not found',
             });
-                 
+
         }
     } catch (error) {
         return res.status(400).json({
@@ -483,7 +535,7 @@ exports.login = async (req, res) => {
 
 exports.savePost = async (req, res) => {
     try {
-        const { userId, postId} = req.body
+        const { userId, postId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -503,7 +555,7 @@ exports.savePost = async (req, res) => {
         });
         const savedPosts = post?.savedPosts
         savedPosts.push(postId);
-        const newUser = User.findByIdAndUpdate(userId, {savedPosts:savedPosts},
+        const newUser = User.findByIdAndUpdate(userId, { savedPosts: savedPosts },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -517,7 +569,7 @@ exports.savePost = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -530,22 +582,31 @@ exports.savePost = async (req, res) => {
 exports.getUser = async (req, res) => {
     try {
         const { userId } = req.query;
-        const user = User.find({_id:userId},
+        const user = User.find({ _id: userId },
             function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
+                  const respData = docs[0];
                     return res.status(200).json({
                         status: 'User data',
-                        data : docs
+                        data: {
+                            "status": respData.status,
+                            "gender": respData.gender,
+                            "planet": respData.planet,
+                            "friends": respData.friends,
+                            "_id": respData._id,
+                            "fullName": respData.fullName,
+                            "email": respData.email,
+                        }
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -557,7 +618,7 @@ exports.getUser = async (req, res) => {
 
 exports.addFriendsRequest = async (req, res) => {
     try {
-        const { userId, friendId} = req.body
+        const { userId, friendId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -577,7 +638,7 @@ exports.addFriendsRequest = async (req, res) => {
         });
         const friendRequests = user?.friendRequests
         friendRequests.push(friendId);
-        const newuser = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+        const newuser = User.findByIdAndUpdate(userId, { friendRequests: friendRequests },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -591,7 +652,7 @@ exports.addFriendsRequest = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -602,7 +663,7 @@ exports.addFriendsRequest = async (req, res) => {
 };
 exports.removeFriendRequest = async (req, res) => {
     try {
-        const { userId, friendId} = req.body
+        const { userId, friendId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -622,7 +683,7 @@ exports.removeFriendRequest = async (req, res) => {
         });
         let friendRequests = user?.friendRequests;
         friendRequests = friendRequests.filter(item => item !== friendId);
-        const newPost = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+        const newPost = User.findByIdAndUpdate(userId, { friendRequests: friendRequests },
             function (err, docs) {
                 if (err) {
                     return res.status(400).json({
@@ -639,7 +700,7 @@ exports.removeFriendRequest = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -651,7 +712,7 @@ exports.removeFriendRequest = async (req, res) => {
 
 exports.acceptFriendsRequest = async (req, res) => {
     try {
-        const { userId, friendId} = req.body
+        const { userId, friendId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -671,10 +732,10 @@ exports.acceptFriendsRequest = async (req, res) => {
         });
         let friendRequests = user?.friendRequests;
         friendRequests = friendRequests.filter(item => item !== friendId);
-        const newuser = User.findByIdAndUpdate(userId, {friendRequests:friendRequests},
+        const newuser = User.findByIdAndUpdate(userId, { friendRequests: friendRequests },
             function (err, docs) {
                 if (err) {
-                    console.log("a",docs)
+                    console.log("a", docs)
                     return res.status(400).json({
                         status: 'Fail',
                         message: err,
@@ -683,10 +744,9 @@ exports.acceptFriendsRequest = async (req, res) => {
                 else {
                     let friends = user?.friends;
                     friends.push(friendId);
-                    const newuser2 = User.findByIdAndUpdate(userId, {friends:friends},
+                    const newuser2 = User.findByIdAndUpdate(userId, { friends: friends },
                         function (err, docs) {
                             if (err) {
-                                console.log("b",docs)
                                 return res.status(400).json({
                                     status: 'Fail',
                                     message: err,
@@ -703,10 +763,9 @@ exports.acceptFriendsRequest = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
-        console.log("c",error)
         return res.status(400).json({
             status: 'Fail',
             message: error,
@@ -716,7 +775,7 @@ exports.acceptFriendsRequest = async (req, res) => {
 
 exports.unFriends = async (req, res) => {
     try {
-        const { userId, friendId} = req.body
+        const { userId, friendId } = req.body
         let errors = [];
         if (!userId) {
             errors.push('userId is requied');
@@ -736,7 +795,7 @@ exports.unFriends = async (req, res) => {
         });
         let friends = user?.friends;
         friends = friends.filter(item => item !== friendId);
-        const newPost = User.findByIdAndUpdate(userId, {friends:friends},
+        const newPost = User.findByIdAndUpdate(userId, { friends: friends },
             function (err, docs) {
                 if (err) {
                     console.log(err)
@@ -750,7 +809,7 @@ exports.unFriends = async (req, res) => {
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -763,22 +822,36 @@ exports.unFriends = async (req, res) => {
 exports.getFriendRequests = async (req, res) => {
     try {
         const { userId } = req.query;
-        const user = User.find({_id:userId},
+        const user = User.find({ _id: userId },
             function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
+                    // const respData = [];
+                    // for (let index = 0; index < docs.friends.length; index++) {
+                    //     const element = docs.friends[index];
+                    //     respData.push({
+                    //         "status": element.status,
+                    //         "gender": element.gender,
+                    //         "planet": element.planet,
+                    //         "friends": element.friends,
+                    //         "_id": element._id,
+                    //         "fullName": element.fullName,
+                    //         "email": element.email,
+                    //     })
+                        
+                    // }
                     return res.status(200).json({
                         status: 'User data',
-                        data : docs
+                        data: docs[0].friendRequests
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({
@@ -791,23 +864,22 @@ exports.getFriendRequests = async (req, res) => {
 exports.getFriends = async (req, res) => {
     try {
         const { userId } = req.query;
-        const user = User.find({_id:userId},
+        const user = User.find({ _id: userId },
             function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
-                    console.log("sd",docs)
                     return res.status(200).json({
                         status: 'User data',
-                        data : docs
+                        data: docs[0].friends
                     });
                 }
             });
         // let post = await new Post(req.body);
 
         // await post.save();
-       
+
 
     } catch (error) {
         return res.status(400).json({

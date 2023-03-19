@@ -293,6 +293,32 @@
                 }
             }
         },
+        "/user/updatePassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "update password",
+                "parameters": [
+                    {
+                        "name": "update password",
+                        "in": "body",
+                        "description": "update password",
+                        "schema": {
+                            "$ref": "#/definitions/updatePassword"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Your password is updated"
+                    }
+                }
+            }
+        },
         "/post/createPost": {
             "post": {
                 "tags": [
@@ -1048,6 +1074,24 @@
                     "type": "string"
                 },
                 "newPassword": {
+                    "type": "string" 
+                }
+            }
+        },
+        "updatePassword": {
+            "required": [
+                "oldPassword",
+                "newPassword",
+                "id"
+            ],
+            "properties": {
+                "oldPassword": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string" 
+                },
+                "id": {
                     "type": "string" 
                 }
             }
