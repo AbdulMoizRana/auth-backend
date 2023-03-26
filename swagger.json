@@ -101,12 +101,12 @@
                 "tags": [
                     "Users"
                 ],
-                "description": "Create new user in system",
+                "description": "setup profile of user",
                 "parameters": [
                     {
                         "name": "enter details",
                         "in": "body",
-                        "description": "email",
+                        "description": "userName, gender, planet, country, postalCode, email is required everthing else is optional",
                         "schema": {
                             "type": "object",
                             "properties": {
@@ -135,7 +135,81 @@
                                 },
                                 "postalCode": {
                                     "type": "string"
-                                }
+                                },
+                                "dob": {
+                                    "type": "string"
+                                  },
+                                  "language": {
+                                    "type": "string"
+                                  },
+                                  "headline": {
+                                    "type": "string"
+                                  },
+                                  "domain": {
+                                    "type": "string"
+                                  },
+                                  "relation": {
+                                    "type": "string"
+                                  },
+                                  "orientation": {
+                                    "type": "string"
+                                  },
+                                  "herefor": {
+                                    "type": "string",
+                                    "enum": ["Friends", "Dating", "Notworking","Business"],
+                                    "default": "Friends"
+                                  },
+                                  "education": {
+                                    "type": "string"
+                                  },
+                                  "schoolName": {
+                                    "type": "string"
+                                  },
+                                  "fieldName": {
+                                    "type": "string"
+                                  },
+                                  "ethnicity": {
+                                    "type": "string"
+                                  },
+                                  "peopleYouAdmire": {
+                                    "type": "string"
+                                  },
+                                  "favBandsGroups": {
+                                    "type": "string"
+                                  },
+                                  "favBooks": {
+                                    "type": "string"
+                                  },
+                                  "favShows": {
+                                    "type": "string"
+                                  },
+                                  "favMovies": {
+                                    "type": "string"
+                                  },
+                                  "bodyType":{
+                                    "type": "string"
+                                  },
+                                  "hairColor":{
+                                    "type": "string"
+                                  },
+                                  "hairLength":{
+                                    "type": "string"
+                                  },
+                                  "hairType":{
+                                    "type": "string"
+                                  },
+                                  "eyeColor":{
+                                    "type": "string"
+                                  },
+                                  "faceHair":{
+                                    "type": "string"
+                                  },
+                                  "bodyTattoos":{
+                                    "type": "string"
+                                  },
+                                  "faceTats":{
+                                    "type": "string"
+                                  }
                             }
                         }
                     }
@@ -1106,9 +1180,6 @@
                 },
                 "postPhotos": {
                     "type": "array"
-                },
-                "postType": {
-                    "type": "string"
                 },
                 "tags": {
                     "type": "array"
