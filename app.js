@@ -2,6 +2,7 @@ const express = require("express");
 const connectDB = require("./config/dataBase");
 const routes = require('./routes/index');
 const Room = require('./models/Rooms');
+const {saveMessage} = require('./controllers/messageController');
 const dotenv = require('dotenv');
 
 var cors = require('cors')
@@ -67,28 +68,35 @@ const getRoom = async (senId, recId) => {
   }
 }
 
-io.on('connection', (socket) => {
+const connectMongoDb = async () => {
+  await connectDB();
+}
+
+io.on('connection', async (socket) => {
+  await connectMongoDb();
   console.log('a user connected');
+  // console.log("join0", socket.id)
   socket.on('toBe', async function (msg) {
-    // console.log("msg",msg)
+    console.log("msg",msg)
     //   io.emit('toFe',msg)
-    const room = await getRoom('124','321');
-    console.log("room", room)
-    socket.join(msg.room)
-    socket.to(msg.room).emit("toFe", room);
+    const room = await getRoom(msg.senderId, msg.recId);
+  
+    console.log("socket.id", socket.id)
+    socket.join(room?.roomId);
+    socket.emit("toFe", room?.roomId);
   })
   socket.on('messageBe', function (msg) {
-    // console.log("msg",msg)
+    console.log("msg",msg)
     //   io.emit('toFe',msg)
-    socket.to(msg.room).emit("messageFe", msg);
+    const data = { message:msg.message, senderId:msg.senderId, recId:msg.recId, roomId:msg?.roomId}
+    saveMessage(data)
+    socket.to(msg?.roomId).emit("messageFe", msg.message);
   })
   //   socket.on('chatAgent', function(msg){
   //   console.log('a user connected',msg);
   //     io.emit('widget',msg)
   // })
 });
-
-connectDB();
 
 const PORT = process.env.PORT || 8000;
 
