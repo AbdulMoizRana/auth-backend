@@ -69,11 +69,12 @@ const getRoom = async (senId, recId) => {
 }
 
 const connectMongoDb = async () => {
-  await connectDB();
+   const db = await connectDB();
+   return db;
 }
-
+connectMongoDb();
 io.on('connection', async (socket) => {
-  await connectMongoDb();
+  // await 
   console.log('a user connected');
   // console.log("join0", socket.id)
   socket.on('toBe', async function (msg) {
