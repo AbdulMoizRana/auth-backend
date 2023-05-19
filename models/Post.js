@@ -13,7 +13,7 @@ const postSchema = new mongoose.Schema(
     },
     postType:{
       type: String,
-      enum:['Photo', 'Bulletin', 'Blog'],
+      enum:['Photo', 'Text'],
       default: 'Photo',
     },
     tags: {
