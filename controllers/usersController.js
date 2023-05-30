@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const nodemailer = require("nodemailer");
 const Setting = require('../models/Setting');
+const { json } = require('express/lib/response');
 
 
 exports.forgetPassword = async (req, res) => {
@@ -589,17 +590,10 @@ exports.getUser = async (req, res) => {
                 }
                 else {
                   const respData = docs[0];
+                  respData.password = undefined;
                     return res.status(200).json({
                         status: 'User data',
-                        data: {
-                            "status": respData.status,
-                            "gender": respData.gender,
-                            "planet": respData.planet,
-                            "friends": respData.friends,
-                            "_id": respData._id,
-                            "fullName": respData.fullName,
-                            "email": respData.email,
-                        }
+                        data: respData
                     });
                 }
             });
@@ -627,16 +621,8 @@ exports.getAllUsers = async (req, res) => {
                 else {
                   let respData = [];
                   docs?.map((item,index)=>{
-                      respData?.push(
-                          {
-                            "status": item.status,
-                            "gender": item.gender,
-                            "planet": item.planet,
-                            "friends": item.friends,
-                            "_id": item._id,
-                            "fullName": item.fullName,
-                            "email": item.email,
-                        });
+                      item.password = undefined;
+                      respData?.push(item);
                   })
                     return res.status(200).json({
                         status: 'User data',
@@ -887,16 +873,8 @@ exports.getFriendRequests = async (req, res) => {
                     const friendsData = await User.find({_id:{$in:docs[0].friendRequests}})
                     let respData = [];
                     friendsData?.map((item,index)=>{
-                      respData?.push(
-                          {
-                            "status": item.status,
-                            "gender": item.gender,
-                            "planet": item.planet,
-                            "friends": item.friends,
-                            "_id": item._id,
-                            "fullName": item.fullName,
-                            "email": item.email,
-                        });
+                       item.password = undefined
+                      respData?.push(item);
                   })
                     return res.status(200).json({
                         status: 'User data',
@@ -921,14 +899,20 @@ exports.getFriends = async (req, res) => {
     try {
         const { userId } = req.query;
         const user = User.find({ _id: userId },
-            function (err, docs) {
+           async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
+                    const friendsData = await User.find({_id:{$in:docs[0].friends}})
+                    let respData = [];
+                    friendsData?.map((item,index)=>{
+                       item.password = undefined
+                      respData?.push(item);
+                  })
                     return res.status(200).json({
                         status: 'User data',
-                        data: docs[0].friends
+                        data: respData
                     });
                 }
             });
