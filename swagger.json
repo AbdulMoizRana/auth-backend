@@ -856,6 +856,28 @@
                 }
             }
         },
+        "/user/getAllUsers": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "get user",
+                "parameters": [
+                   
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data of user",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    }
+                }
+            }
+        },
         "/user/getFriends": {
             "get": {
                 "tags": [

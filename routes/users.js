@@ -16,7 +16,8 @@ const {
    removeFriendRequest,
    forgetPassword,
    changePassword,
-   updatePassword
+   updatePassword,
+   getAllUsers
 } = require('../controllers/usersController');
 
 const router = express.Router({ mergeParams: true });
@@ -29,6 +30,7 @@ router.route('/login').post(login);
 router.route('/profileSetup').post(profileSetup);
 router.route('/savePost').post(savePost);
 router.route('/getUser').get(getUser);
+router.route('/getAllUsers').get(getAllUsers);
 router.route('/getFriends').get(getFriends);
 router.route('/getFriendRequest').get(getFriendRequests);
 router.route('/addFriendsRequest').post(addFriendsRequest);

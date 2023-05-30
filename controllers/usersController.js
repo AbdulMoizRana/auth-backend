@@ -616,6 +616,47 @@ exports.getUser = async (req, res) => {
     }
 };
 
+exports.getAllUsers = async (req, res) => {
+    try {
+        // const { userId } = req.query;
+        const user = User.find({},
+            function (err, docs) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                  let respData = [];
+                  docs?.map((item,index)=>{
+                      respData?.push(
+                          {
+                            "status": item.status,
+                            "gender": item.gender,
+                            "planet": item.planet,
+                            "friends": item.friends,
+                            "_id": item._id,
+                            "fullName": item.fullName,
+                            "email": item.email,
+                        });
+                  })
+                    return res.status(200).json({
+                        status: 'User data',
+                        data: respData
+                    });
+                }
+            });
+        // let post = await new Post(req.body);
+
+        // await post.save();
+
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: error,
+        });
+    }
+};
+
 exports.addFriendsRequest = async (req, res) => {
     try {
         const { userId, friendId } = req.body
@@ -823,11 +864,12 @@ exports.getFriendRequests = async (req, res) => {
     try {
         const { userId } = req.query;
         const user = User.find({ _id: userId },
-            function (err, docs) {
+          async  function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
+                    // console.log("641506403fe144001430f567",docs)
                     // const respData = [];
                     // for (let index = 0; index < docs.friends.length; index++) {
                     //     const element = docs.friends[index];
@@ -842,9 +884,23 @@ exports.getFriendRequests = async (req, res) => {
                     //     })
                         
                     // }
+                    const friendsData = await User.find({_id:{$in:docs[0].friendRequests}})
+                    let respData = [];
+                    friendsData?.map((item,index)=>{
+                      respData?.push(
+                          {
+                            "status": item.status,
+                            "gender": item.gender,
+                            "planet": item.planet,
+                            "friends": item.friends,
+                            "_id": item._id,
+                            "fullName": item.fullName,
+                            "email": item.email,
+                        });
+                  })
                     return res.status(200).json({
                         status: 'User data',
-                        data: docs[0].friendRequests
+                        data: respData
                     });
                 }
             });
