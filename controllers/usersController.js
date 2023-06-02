@@ -554,7 +554,7 @@ exports.savePost = async (req, res) => {
         const user = await User.findOne({
             _id: userId
         });
-        const savedPosts = post?.savedPosts
+        const savedPosts = user?.savedPosts
         savedPosts.push(postId);
         const newUser = User.findByIdAndUpdate(userId, { savedPosts: savedPosts },
             function (err, docs) {
@@ -563,7 +563,7 @@ exports.savePost = async (req, res) => {
                 }
                 else {
                     return res.status(200).json({
-                        status: 'Post have re shared',
+                        status: 'Post have been saved',
                     });
                 }
             });
@@ -661,11 +661,11 @@ exports.addFriendsRequest = async (req, res) => {
             });
         }
         const user = await User.findOne({
-            _id: userId
+            _id: friendId
         });
         const friendRequests = user?.friendRequests
-        friendRequests.push(friendId);
-        const newuser = User.findByIdAndUpdate(userId, { friendRequests: friendRequests },
+        friendRequests.push(userId);
+        const newuser = User.findByIdAndUpdate(friendId, { friendRequests: friendRequests },
             function (err, docs) {
                 if (err) {
                     console.log(err)

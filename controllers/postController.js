@@ -143,24 +143,20 @@ exports.getPost = async (req, res) => {
     try {
         const { postId } = req.query;
         const post = await Post.findById(postId);
-        let respData = [];
-        let commentsData = [];
-        post.likes.map(async (item) => {
-            const likeCheck = await isValidObjectId(item)
-            if (likeCheck) {
-                const userData = await User.findById(item);
-                respData.push(userData);
-            }
+        let likesDataPass = [];
+        let commentsDataPass = [];
+        const likesData = await User.find({ _id: { $in: post.likes } })
+        likesData.map(async (item) => {
+            item.password = undefined;
+            likesDataPass.push(item);
         })
-        post.comments.map(async (item) => {
-            const commentCheck = await isValidObjectId(item)
-            if (commentCheck) {
-                const userData = await User.findById(item);
-                commentsData.push(userData);
-            }
+        const commentsData = await User.find({ _id: { $in: post.comments } })
+        commentsData.map(async (item) => {
+            item.password = undefined;
+            commentsDataPass.push(item);
         })
-        post.comments = commentsData;
-        post.likes = respData;
+        post.comments = commentsDataPass;
+        post.likes = likesDataPass;
         const user = await User.findById(post?.postUser);
         if (user) {
             // const { password, ...userRest } = user;
@@ -265,37 +261,33 @@ exports.getAllPosts = async (req, res) => {
 };
 exports.getPostByType = async (req, res) => {
     try {
-        const { postId } = req.query;
-        const post = Post.find({ postId: postId },
-          async  function (err, docs) {
-                if (err) {
-                    console.log(err)
-                }
-                else {
-                    let respData = [];
-                    let commentsData = [];
-                    docs.likes.map(async (item) => {
-                        const likeCheck = await isValidObjectId(item)
-                        if (likeCheck) {
-                            const userData = await User.findById(item);
-                            respData.push(userData);
-                        }
-                    })
-                    docs.comments.map(async (item) => {
-                        const commentCheck = await isValidObjectId(item)
-                        if (commentCheck) {
-                            const userData = await User.findById(item);
-                            commentsData.push(userData);
-                        }
-                    })
-                    docs.comments = commentsData;
-                    docs.likes = respData;
-                    return res.status(200).json({
-                        status: 'Post data',
-                        data: docs
-                    });
-                }
-            });
+        const { postType } = req.query;
+        const post = await Post.find({ postType: postType });
+        let likesDataPass = [];
+        let commentsDataPass = [];
+        let allPosts = [];
+       await post?.map(async(pd)=>{
+            const likesData = await User.find({ _id: { $in: pd.likes } })
+            likesData.map(async (item) => {
+                item.password = undefined;
+                likesDataPass.push(item);
+            })
+            const commentsData = await User.find({ _id: { $in: pd.comments } })
+            commentsData.map(async (item) => {
+                item.password = undefined;
+                commentsDataPass.push(item);
+            })
+            pd.comments = commentsDataPass;
+            pd.likes = likesDataPass;
+            allPosts.push(pd);
+        })
+        return res.status(200).json({
+            status: true,
+            message: 'Post data',
+            data: {
+                postData: allPosts, 
+            }
+        });
         // let post = await new Post(req.body);
 
         // await post.save();
@@ -312,21 +304,21 @@ exports.getPostOfUser = async (req, res) => {
     try {
         const { userId } = req.query;
         const post = Post.find({ postUser: userId },
-          async  function (err, docs) {
+            async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
                     let respData = [];
                     let commentsData = [];
-                    docs.likes.map(async (item) => {
+                    docs?.likes?.map(async (item) => {
                         const likeCheck = await isValidObjectId(item)
                         if (likeCheck) {
                             const userData = await User.findById(item);
                             respData.push(userData);
                         }
                     })
-                    docs.comments.map(async (item) => {
+                    docs?.comments?.map(async (item) => {
                         const commentCheck = await isValidObjectId(item)
                         if (commentCheck) {
                             const userData = await User.findById(item);
@@ -357,21 +349,21 @@ exports.getPostByAudience = async (req, res) => {
     try {
         const { type } = req.query;
         const post = Post.find({ postAudienceType: type },
-          async  function (err, docs) {
+            async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
                     let respData = [];
                     let commentsData = [];
-                    docs.likes.map(async (item) => {
+                    docs?.likes?.map(async (item) => {
                         const likeCheck = await isValidObjectId(item)
                         if (likeCheck) {
                             const userData = await User.findById(item);
                             respData.push(userData);
                         }
                     })
-                    docs.comments.map(async (item) => {
+                    docs?.comments?.map(async (item) => {
                         const commentCheck = await isValidObjectId(item)
                         if (commentCheck) {
                             const userData = await User.findById(item);
