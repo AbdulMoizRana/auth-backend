@@ -583,14 +583,28 @@ exports.savePost = async (req, res) => {
 exports.getUser = async (req, res) => {
     try {
         const { userId } = req.query;
+        let fReqData = [];
+        let fData = [];
         const user = User.find({ _id: userId },
-            function (err, docs) {
+            async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
-                  const respData = docs[0];
-                  respData.password = undefined;
+                    const respData = docs[0];
+                    const fReqDataC = await User.find({ _id: { $in: respData.friendRequests } })
+                    fReqDataC.map(async (item) => {
+                        item.password = undefined;
+                        fReqData.push(item);
+                    });
+                    const fDataC = await User.find({ _id: { $in: respData.friends } })
+                    fDataC.map(async (item) => {
+                        item.password = undefined;
+                        fData.push(item);
+                    });
+                    respData.friendRequests = fReqData;
+                    respData.friends = fData;
+                    respData.password = undefined;
                     return res.status(200).json({
                         status: 'User data',
                         data: respData
@@ -613,20 +627,40 @@ exports.getUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
     try {
         // const { userId } = req.query;
+        let fReqData = [];
+        let fData = [];
+        let mData = [];
         const user = User.find({},
-            function (err, docs) {
+          async  function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
-                  let respData = [];
-                  docs?.map((item,index)=>{
-                      item.password = undefined;
-                      respData?.push(item);
-                  })
+                    let respData = [];
+                    docs?.map(async(item, index) => {
+                        item.password = undefined;
+                        respData?.push(item);
+                    })
+                    for (let index = 0; index < respData.length; index++) {
+                        const element = respData[index];
+                        const fReqDataC = await User.find({ _id: { $in: element.friendRequests } })
+                        fReqDataC.map(async (item) => {
+                            item.password = undefined;
+                            fReqData.push(item);
+                        });
+                        const fDataC = await User.find({ _id: { $in: element?.friends } })
+                        fDataC.map(async (item) => {
+                            item.password = undefined;
+                            fData.push(item);
+                        });
+                        // console.log("item.friends",fDataC)
+                        element.friendRequests = fReqData;
+                        element.friends = fData;
+                        mData.push(element);
+                    }
                     return res.status(200).json({
                         status: 'User data',
-                        data: respData
+                        data: mData
                     });
                 }
             });
@@ -850,7 +884,7 @@ exports.getFriendRequests = async (req, res) => {
     try {
         const { userId } = req.query;
         const user = User.find({ _id: userId },
-          async  function (err, docs) {
+            async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
@@ -868,17 +902,25 @@ exports.getFriendRequests = async (req, res) => {
                     //         "fullName": element.fullName,
                     //         "email": element.email,
                     //     })
-                        
+
                     // }
-                    const friendsData = await User.find({_id:{$in:docs[0].friendRequests}})
-                    let respData = [];
-                    friendsData?.map((item,index)=>{
-                       item.password = undefined
-                      respData?.push(item);
-                  })
+                    const friendsData = await User.find({ _id: { $in: docs[0].friendRequests } });
+                    // console.log("friendsData",friendsData)
+                    // let respData = [];
+                    // for (let index = 0; index < friendsData.length; index++) {
+                    //     const element = friendsData[index];
+                    //     element.password = undefined;
+                    //     docs[0].friendRequests = element.friendRequests
+                    //     respData?.push(element);
+                    // }
+                    // friendsData?.map((item, index) => {
+                    //     item.password = undefined
+                    //     respData?.push(item);
+                    // })
+                    docs[0].friendRequests = friendsData
                     return res.status(200).json({
                         status: 'User data',
-                        data: respData
+                        data: docs
                     });
                 }
             });
@@ -899,20 +941,21 @@ exports.getFriends = async (req, res) => {
     try {
         const { userId } = req.query;
         const user = User.find({ _id: userId },
-           async function (err, docs) {
+            async function (err, docs) {
                 if (err) {
                     console.log(err)
                 }
                 else {
-                    const friendsData = await User.find({_id:{$in:docs[0].friends}})
-                    let respData = [];
-                    friendsData?.map((item,index)=>{
-                       item.password = undefined
-                      respData?.push(item);
-                  })
+                    const friendsData = await User.find({ _id: { $in: docs[0].friends } })
+                    // let respData = [];
+                    // friendsData?.map((item, index) => {
+                    //     item.password = undefined
+                    //     respData?.push(item);
+                    // })
+                    docs[0].friends = friendsData
                     return res.status(200).json({
                         status: 'User data',
-                        data: respData
+                        data: docs
                     });
                 }
             });

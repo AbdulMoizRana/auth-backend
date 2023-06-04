@@ -53,6 +53,10 @@ const postSchema = new mongoose.Schema(
       comment: {
         type: String,
         required : true, // required informs for missing fields
+    },
+    user:{
+      type:Object,
+      required: false
     }
       }
     ],

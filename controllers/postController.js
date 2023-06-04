@@ -145,17 +145,31 @@ exports.getPost = async (req, res) => {
         const post = await Post.findById(postId);
         let likesDataPass = [];
         let commentsDataPass = [];
+        let commentsDataIds = [];
+        //    await post?.map(async(pd)=>{
+
         const likesData = await User.find({ _id: { $in: post.likes } })
         likesData.map(async (item) => {
             item.password = undefined;
             likesDataPass.push(item);
         })
-        const commentsData = await User.find({ _id: { $in: post.comments } })
-        commentsData.map(async (item) => {
-            item.password = undefined;
-            commentsDataPass.push(item);
-        })
-        post.comments = commentsDataPass;
+        for (let index = 0; index < post.comments.length; index++) {
+            const element = post.comments[index];
+            const userL = await User.findById(element?.userId);
+            const param = {
+                commentId: element?._id,
+                comment: element?.comment,
+                user: userL
+            }
+            // commentsDataPass = [...commentsDataPass,param]
+           await commentsDataPass.push(param)
+        }
+        // const commentsData = await User.find({ _id: { $in: post.comments } })
+        // commentsData.map(async (item) => {
+        //     item.password = undefined;
+        //     commentsDataPass.push(item);
+        // })
+        post.comments =  commentsDataPass;
         post.likes = likesDataPass;
         const user = await User.findById(post?.postUser);
         if (user) {
@@ -214,13 +228,17 @@ exports.getAllPosts = async (req, res) => {
                         respData.push(userData);
                     }
                 })
-                element.comments.map(async (item) => {
-                    const commentCheck = await isValidObjectId(item)
-                    if (commentCheck) {
-                        const userData = await User.findById(item);
-                        commentsData.push(userData);
+                for (let index = 0; index < element.comments.length; index++) {
+                    const pComment = element.comments[index];
+                    const userL = await User.findById(pComment?.userId);
+                    const param = {
+                        commentId: pComment?._id,
+                        comment: pComment?.comment,
+                        user: userL
                     }
-                })
+                    // commentsDataPass = [...commentsDataPass,param]
+                   await commentsData.push(param)
+                }
                 // const postlikes = await User.find({ _id: { $in: element.likes } });
                 element.comments = commentsData;
                 element.likes = respData;
@@ -266,26 +284,38 @@ exports.getPostByType = async (req, res) => {
         let likesDataPass = [];
         let commentsDataPass = [];
         let allPosts = [];
-       await post?.map(async(pd)=>{
+        //    await post?.map(async(pd)=>{
+        for (let index = 0; index < post.length; index++) {
+            const pd = post[index];
+
+            //    }
             const likesData = await User.find({ _id: { $in: pd.likes } })
             likesData.map(async (item) => {
                 item.password = undefined;
                 likesDataPass.push(item);
             })
-            const commentsData = await User.find({ _id: { $in: pd.comments } })
-            commentsData.map(async (item) => {
-                item.password = undefined;
-                commentsDataPass.push(item);
-            })
+            for (let index = 0; index < pd.comments.length; index++) {
+                const pComment = pd.comments[index];
+                const userL = await User.findById(pComment?.userId);
+                const param = {
+                    commentId: pComment?._id,
+                    comment: pComment?.comment,
+                    user: userL
+                }
+                // commentsDataPass = [...commentsDataPass,param]
+               await commentsDataPass.push(param)
+            }
+            const postUser = await User.find({ _id: pd.postUser })
+            pd.postUser = postUser[0];
             pd.comments = commentsDataPass;
             pd.likes = likesDataPass;
             allPosts.push(pd);
-        })
+        }
         return res.status(200).json({
             status: true,
             message: 'Post data',
             data: {
-                postData: allPosts, 
+                postData: allPosts,
             }
         });
         // let post = await new Post(req.body);
@@ -303,36 +333,44 @@ exports.getPostByType = async (req, res) => {
 exports.getPostOfUser = async (req, res) => {
     try {
         const { userId } = req.query;
-        const post = Post.find({ postUser: userId },
-            async function (err, docs) {
-                if (err) {
-                    console.log(err)
+        const post = await Post.find({ postUser: userId });
+        let likesDataPass = [];
+        let commentsDataPass = [];
+        let allPosts = [];
+        //    await post?.map(async(pd)=>{
+        for (let index = 0; index < post.length; index++) {
+            const pd = post[index];
+
+            //    }
+            const likesData = await User.find({ _id: { $in: pd.likes } })
+            likesData.map(async (item) => {
+                item.password = undefined;
+                likesDataPass.push(item);
+            })
+            for (let index = 0; index < pd.comments.length; index++) {
+                const pComment = pd.comments[index];
+                const userL = await User.findById(pComment?.userId);
+                const param = {
+                    commentId: pComment?._id,
+                    comment: pComment?.comment,
+                    user: userL
                 }
-                else {
-                    let respData = [];
-                    let commentsData = [];
-                    docs?.likes?.map(async (item) => {
-                        const likeCheck = await isValidObjectId(item)
-                        if (likeCheck) {
-                            const userData = await User.findById(item);
-                            respData.push(userData);
-                        }
-                    })
-                    docs?.comments?.map(async (item) => {
-                        const commentCheck = await isValidObjectId(item)
-                        if (commentCheck) {
-                            const userData = await User.findById(item);
-                            commentsData.push(userData);
-                        }
-                    })
-                    docs.comments = commentsData;
-                    docs.likes = respData;
-                    return res.status(200).json({
-                        status: 'Post data',
-                        data: docs
-                    });
-                }
-            });
+                // commentsDataPass = [...commentsDataPass,param]
+               await commentsDataPass.push(param)
+            }
+            const postUser = await User.find({ _id: pd.postUser })
+            pd.postUser = postUser[0];
+            pd.comments = commentsDataPass;
+            pd.likes = likesDataPass;
+            allPosts.push(pd);
+        }
+        return res.status(200).json({
+            status: true,
+            message: 'Post data',
+            data: {
+                postData: allPosts,
+            }
+        });
         // let post = await new Post(req.body);
 
         // await post.save();
@@ -348,36 +386,44 @@ exports.getPostOfUser = async (req, res) => {
 exports.getPostByAudience = async (req, res) => {
     try {
         const { type } = req.query;
-        const post = Post.find({ postAudienceType: type },
-            async function (err, docs) {
-                if (err) {
-                    console.log(err)
+        const post = await Post.find({ postAudienceType: type });
+        let likesDataPass = [];
+        let commentsDataPass = [];
+        let allPosts = [];
+        //    await post?.map(async(pd)=>{
+        for (let index = 0; index < post.length; index++) {
+            const pd = post[index];
+
+            //    }
+            const likesData = await User.find({ _id: { $in: pd.likes } })
+            likesData.map(async (item) => {
+                item.password = undefined;
+                likesDataPass.push(item);
+            })
+            for (let index = 0; index < pd.comments.length; index++) {
+                const pComment = pd.comments[index];
+                const userL = await User.findById(pComment?.userId);
+                const param = {
+                    commentId: pComment?._id,
+                    comment: pComment?.comment,
+                    user: userL
                 }
-                else {
-                    let respData = [];
-                    let commentsData = [];
-                    docs?.likes?.map(async (item) => {
-                        const likeCheck = await isValidObjectId(item)
-                        if (likeCheck) {
-                            const userData = await User.findById(item);
-                            respData.push(userData);
-                        }
-                    })
-                    docs?.comments?.map(async (item) => {
-                        const commentCheck = await isValidObjectId(item)
-                        if (commentCheck) {
-                            const userData = await User.findById(item);
-                            commentsData.push(userData);
-                        }
-                    })
-                    docs.comments = commentsData;
-                    docs.likes = respData;
-                    return res.status(200).json({
-                        status: 'Post data',
-                        data: docs
-                    });
-                }
-            });
+                // commentsDataPass = [...commentsDataPass,param]
+               await commentsDataPass.push(param)
+            }
+            const postUser = await User.find({ _id: pd.postUser })
+            pd.postUser = postUser[0];
+            pd.comments = commentsDataPass;
+            pd.likes = likesDataPass;
+            allPosts.push(pd);
+        }
+        return res.status(200).json({
+            status: true,
+            message: 'Post data',
+            data: {
+                postData: allPosts,
+            }
+        });
         // let post = await new Post(req.body);
 
         // await post.save();
