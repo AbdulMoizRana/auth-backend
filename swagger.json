@@ -10,7 +10,7 @@
     }
   },
 
-  "host": "auth-backend-production-0616.up.railway.app",
+  "host": "localhost:8000",
   "basePath": "/api/v1",
   "tags": [
     {
@@ -18,7 +18,7 @@
       "description": "API for users in the system"
     }
   ],
-  "schemes": ["https"],
+  "schemes": ["http"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {
@@ -817,6 +817,31 @@
         }
       }
     },
+    "/user/getSentFriendRequests": {
+      "get": {
+        "tags": ["Users"],
+        "description": "get user",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "user id",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "data of user",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
     "/user/acceptFriendsRequest": {
       "post": {
         "tags": ["Users"],
@@ -878,6 +903,36 @@
       }
     },
     "/user/removeFriendRequest": {
+      "post": {
+        "tags": ["Users"],
+        "description": "post saved",
+        "parameters": [
+          {
+            "name": "postid userid",
+            "in": "body",
+            "description": "enter postid and userid",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "type": "string"
+                },
+                "friendId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Post have saved"
+          }
+        }
+      }
+    },
+    "/user/cancelFriendRequest": {
       "post": {
         "tags": ["Users"],
         "description": "post saved",
@@ -1180,6 +1235,9 @@
           "type": "string"
         },
         "userId": {
+          "type": "string"
+        },
+        "photo": {
           "type": "string"
         }
       }

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
@@ -16,122 +16,125 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Active'],
-      default: 'Pending'
+      enum: ["Pending", "Active"],
+      default: "Pending",
     },
     otp: {
       type: String,
-      // unique: true 
+      // unique: true
     },
     profileImage: {
-      type: String
+      type: String,
     },
     gender: {
       type: String,
-      enum: ['Female', 'Male', 'Other'],
-      default: 'Female'
+      enum: ["Female", "Male", "Other"],
+      default: "Female",
     },
     planet: {
       type: String,
-      enum: ['Earth', 'Mars'],
-      default: 'Earth'
+      enum: ["Earth", "Mars"],
+      default: "Earth",
     },
     country: {
-      type: String
+      type: String,
     },
     postalCode: {
-      type: String
+      type: String,
     },
     savedPosts: {
-      type: Array
+      type: Array,
     },
     friendRequests: {
-      type: Array
+      type: Array,
+    },
+    sentRequests: {
+      type: Array,
     },
     friends: {
-      type: Array
+      type: Array,
     },
     forgetPasswordCode: {
-      type: String
+      type: String,
     },
     dob: {
-      type: String
+      type: String,
     },
     language: {
-      type: String
+      type: String,
     },
     headline: {
-      type: String
+      type: String,
     },
     domain: {
-      type: String
+      type: String,
     },
     relation: {
-      type: String
+      type: String,
     },
     orientation: {
-      type: String
+      type: String,
     },
     herefor: {
       type: String,
-      enum: ['Friends', 'Dating', 'Notworking','Business'],
-      default: 'Friends'
+      enum: ["Friends", "Dating", "Notworking", "Business"],
+      default: "Friends",
     },
     education: {
-      type: String
+      type: String,
     },
     schoolName: {
-      type: String
+      type: String,
     },
     fieldName: {
-      type: String
+      type: String,
     },
     ethnicity: {
-      type: String
+      type: String,
     },
     peopleYouAdmire: {
-      type: String
+      type: String,
     },
     favBandsGroups: {
-      type: String
+      type: String,
     },
     favBooks: {
-      type: String
+      type: String,
     },
     favShows: {
-      type: String
+      type: String,
     },
     favMovies: {
-      type: String
+      type: String,
     },
-    bodyType:{
-      type: String
+    bodyType: {
+      type: String,
     },
-    hairColor:{
-      type: String
+    hairColor: {
+      type: String,
     },
-    hairLength:{
-      type: String
+    hairLength: {
+      type: String,
     },
-    hairType:{
-      type: String
+    hairType: {
+      type: String,
     },
-    eyeColor:{
-      type: String
+    eyeColor: {
+      type: String,
     },
-    faceHair:{
-      type: String
+    faceHair: {
+      type: String,
     },
-    bodyTattoos:{
-      type: String
+    bodyTattoos: {
+      type: String,
     },
-    faceTats:{
-      type: String
+    faceTats: {
+      type: String,
     },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
