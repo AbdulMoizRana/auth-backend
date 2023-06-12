@@ -25,25 +25,12 @@ exports.createPost = async (req, res) => {
       postAudienceType,
     } = req.body;
     let errors = [];
-    // if (!postDescription) {
-    //     errors.push('postDescription is requied');
-    // }
     if (!postUser) {
       errors.push("user of post is requied");
     }
     if (!postTitle) {
       errors.push("post title is requied");
     }
-    // if (!postType) {
-    //     errors.push('post type is requied');
-    // }
-    // if (!nsfw) {
-    //     errors.push('nsfw is requied');
-    // }
-    // if (!postAudienceType) {
-    //     errors.push('post audienceType is requied');
-    // }
-
     if (errors.length > 0) {
       errors = errors.join(",");
       return res.json({
