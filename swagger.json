@@ -10,7 +10,7 @@
     }
   },
 
-  "host": "localhost:8000",
+  "host": "auth-backend-production-0616.up.railway.app",
   "basePath": "/api/v1",
   "tags": [
     {
@@ -18,7 +18,7 @@
       "description": "API for users in the system"
     }
   ],
-  "schemes": ["http"],
+  "schemes": ["https"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {
