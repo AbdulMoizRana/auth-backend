@@ -17,8 +17,10 @@ function isValidObjectId(id) {
 
 exports.createAlbum = async (req, res) => {
   try {
+    // console.log("albId is:", req.body);
     const { userId, albumName } = req.body;
     let errors = [];
+
     // if (!postDescription) {
     //     errors.push('postDescription is requied');
     // }
@@ -150,7 +152,7 @@ exports.getAlbumOfUser = async (req, res) => {
     const { userId } = req.query;
     const album = await Album.find({ userId: userId });
     let allPosts = [];
-    console.log("getAllbumOfUser", album);
+    // console.log("getAllbumOfUser", album);
     //    await post?.map(async(pd)=>{
     for (let index = 0; index < album.length; index++) {
       const pd = album[index];
@@ -165,6 +167,32 @@ exports.getAlbumOfUser = async (req, res) => {
     // let post = await new Post(req.body);
 
     // await post.save();
+  } catch (error) {
+    return res.status(400).json({
+      status: "Fail",
+      message: error,
+    });
+  }
+};
+
+exports.addPicturesToAlbum = async (req, res) => {
+  try {
+    const { albumId, photo } = req.body;
+    let objC = [];
+    let album1 = await Album.find({ _id: albumId });
+    objC = album1[0];
+    // let aP = album1?.photo;
+    // aP?.push(...photo);
+    // Array.prototype.push.apply(album1?.photo, photo);
+    // console.log("62e0d260f36a7800161cf860", album1?.photo);
+    objC?.photo.push(...photo);
+    // const album = await album1.updateOne({_id:})
+    const al = await Album.findOneAndUpdate({ _id: albumId }, objC);
+    return res.status(200).json({
+      status: true,
+      message: "Changes saved",
+      data: objC,
+    });
   } catch (error) {
     return res.status(400).json({
       status: "Fail",

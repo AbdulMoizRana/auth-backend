@@ -13,7 +13,7 @@ const albumSchema = new mongoose.Schema(
       required: false,
     },
     photo: {
-      type: String,
+      type: Array,
     },
   },
   { timestamps: true }
