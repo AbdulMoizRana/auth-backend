@@ -221,7 +221,7 @@ exports.sendOtpEmail = async (req, res) => {
       });
     } else {
       return res.status(400).json({
-        status: "Success",
+        status: "Failed",
         message: "user already exists",
       });
     }
@@ -235,7 +235,7 @@ exports.sendOtpEmail = async (req, res) => {
 
 exports.verifyUser = async (req, res) => {
   try {
-    const { otp } = req.body;
+    const { otp, email } = req.body;
     let errors = [];
     if (!otp) {
       errors.push("otp");
@@ -249,6 +249,7 @@ exports.verifyUser = async (req, res) => {
     }
     const user = await User.findOne({
       otp: otp,
+      email: email,
     });
     if (!user) {
       return res.status(400).json({
@@ -374,10 +375,16 @@ exports.signUp = async (req, res) => {
       //     });
       // }
     } else {
+      const superfriend = ["64a1de8d98bb5a5ecc6e74cf"];
       const newUser = await User.insertMany([
-        { fullName: fullName, password: password, email: email },
+        {
+          fullName: fullName,
+          password: password,
+          email: email,
+          friends: superfriend,
+          status: "Approved",
+        },
       ]);
-      console.log("hjko", newUser, newUser[0]._id);
       const settingParam = {
         userId: newUser[0]._id,
       };
@@ -833,9 +840,8 @@ exports.acceptFriendsRequest = async (req, res) => {
     const newuser = User.findByIdAndUpdate(
       userId,
       { friendRequests: friendRequests },
-      function (err, docs) {
+      async function (err, docs) {
         if (err) {
-          console.log("a", docs);
           return res.status(400).json({
             status: "Fail",
             message: err,
@@ -846,13 +852,22 @@ exports.acceptFriendsRequest = async (req, res) => {
           const newuser2 = User.findByIdAndUpdate(
             userId,
             { friends: friends },
-            function (err, docs) {
+            async function (err, docs) {
               if (err) {
                 return res.status(400).json({
                   status: "Fail",
                   message: err,
                 });
               } else {
+                const frndDetails = await User.findById(friendId);
+                let frndsF = frndDetails?.friends;
+                frndsF.push(userId);
+                let sentRequests = frndDetails?.sentRequests;
+                sentRequests = sentRequests.filter((item) => item !== userId);
+                const frndIds = await User.findByIdAndUpdate(friendId, {
+                  friends: frndsF,
+                  sentRequests: sentRequests,
+                });
                 return res.status(200).json({
                   status: "You are friends",
                 });

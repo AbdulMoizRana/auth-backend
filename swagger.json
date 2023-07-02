@@ -264,7 +264,15 @@
             "in": "body",
             "description": "verify otp",
             "schema": {
-              "$ref": "#/definitions/VerifyOtp"
+              "type": "object",
+              "properties": {
+                "otp": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
             }
           }
         ],
