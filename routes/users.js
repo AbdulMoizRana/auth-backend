@@ -20,6 +20,7 @@ const {
   getAllUsers,
   cancelFriendRequest,
   getSentFriendRequests,
+  getShopifyToken,
 } = require("../controllers/usersController");
 
 const router = express.Router({ mergeParams: true });
@@ -44,5 +45,6 @@ router.route("/removeFriendRequest").post(removeFriendRequest);
 router.route("/forgetPassword").post(forgetPassword);
 router.route("/changePassword").post(changePassword);
 router.route("/updatePassword").post(updatePassword);
+router.route("/getShopifyToken").post(getShopifyToken);
 
 module.exports = router;
