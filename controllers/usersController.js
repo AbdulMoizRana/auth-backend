@@ -1081,5 +1081,6 @@ exports.getFriends = async (req, res) => {
 };
 
 exports.getShopifyToken = async (req, res) => {
-  console.log("token shopify", req.query);
+  console.log("t req", req);
+  console.log("t res", res);
 };
